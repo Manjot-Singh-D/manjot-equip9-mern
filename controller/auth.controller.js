@@ -2,8 +2,6 @@ const db = require("../models");
 const config = require("../config/auth.config");
 const User = db.user;
 
-const Op = db.Sequelize.Op;
-
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 
@@ -12,8 +10,11 @@ exports.signup = (req, res) => {
   User.create({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
+    photo: "",
     phone: req.body.phone,
     password: bcrypt.hashSync(req.body.password, 8),
+    created_by: req.body.firstName + " " + req.body.lastName,
+    updated_by: req.body.firstName + " " + req.body.lastName,
   })
     .then((user) => {
       res.send({ message: "User registered successfully!" });
