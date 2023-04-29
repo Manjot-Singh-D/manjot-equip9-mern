@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import { useSelector, useDispatch } from "react-redux";
+import { register, reset } from "../store/authSlice";
 const RegisterPage = () => {
   const [registerDetails, setRegisterDetails] = useState({
     firstName: "",
@@ -10,20 +11,41 @@ const RegisterPage = () => {
     password: "",
   });
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
+    (state) => state.auth
+  );
+
+  useEffect(() => {
+    if (isError) {
+      // console.log(message);
+      // toast.error(message);
+    }
+
+    if (isSuccess && user?.data) {
+      navigate("/");
+    }
+    if (isSuccess && !user?.data) {
+      navigate("/login");
+    }
+
+    dispatch(reset());
+  }, [user, isError, isSuccess, message, navigate, dispatch]);
 
   const submitRegister = (event) => {
     event.preventDefault();
-    axios
-      .post("http://localhost:3000/api/auth/signup", registerDetails, {
-        withCredentials: true,
-      })
-      .then((data) => {
-        console.log(data);
-        navigate("/login");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    // axios
+    //   .post("http://localhost:3000/api/auth/signup", registerDetails, {
+    //     withCredentials: true,
+    //   })
+    //   .then((data) => {
+    //     console.log(data);
+    //     navigate("/login");
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
+    dispatch(register(registerDetails));
   };
   const handleChange = (event) => {
     const { name, value } = event.target;

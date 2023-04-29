@@ -63,7 +63,6 @@ exports.signin = (req, res) => {
             firstName: user.firstName,
             lastName: user.lastName,
             phone: user.phone,
-            accessToken: token,
           },
         });
     })

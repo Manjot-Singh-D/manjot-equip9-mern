@@ -1,23 +1,35 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { login, reset } from "../store/authSlice";
 
 const LoginPage = () => {
   const [loginDetails, setLoginDetails] = useState({ phone: "", password: "" });
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
+    (state) => state.auth
+  );
+
+  useEffect(() => {
+    if (isError) {
+      console.log(message);
+      // toast.error(message);
+    }
+
+    if (isSuccess && user?.data) {
+      console.log(isSuccess, user);
+      navigate("/");
+    }
+
+    dispatch(reset());
+  }, [user, isError, isSuccess, message, navigate, dispatch]);
+
   const submitLogin = (event) => {
     event.preventDefault();
-    axios
-      .post("http://localhost:3000/api/auth/signin", loginDetails, {
-        withCredentials: true,
-      })
-      .then((data) => {
-        navigate("/");
-        console.log(data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+
+    dispatch(login(loginDetails));
   };
   const handleChange = (event) => {
     const { name, value } = event.target;
