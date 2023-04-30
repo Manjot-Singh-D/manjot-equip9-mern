@@ -30,11 +30,16 @@ const updateUser = async (updatedValues) => {
       withCredentials: true,
     }
   );
+  let newData = { ...response.data.data };
 
   if (response.data) {
+    if (!response.data.photo) {
+      newData = { ...newData, ["photo"]: updatedValues.photo };
+    }
+
+    response.data.data = newData;
     localStorage.setItem("user", JSON.stringify(response.data));
   }
-
   return response.data;
 };
 // Delete User

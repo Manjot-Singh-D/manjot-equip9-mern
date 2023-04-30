@@ -9,29 +9,31 @@ const unlinkFile = util.promisify(fs.unlink);
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 
-const { uploadFile, getFileStream } = require("./s3.controller");
+const { uploadFile } = require("./s3.controller");
 
 exports.signup = async (req, res) => {
-  // Save User to Database
   try {
     uploadFile(req.file)
-      .then((data) => {
-        User.create({
-          firstName: req.body.firstName,
-          lastName: req.body.lastName,
-          photo: data.Location,
-          phone: req.body.phone,
-          password: bcrypt.hashSync(req.body.password, 8),
-          created_by: req.body.firstName + " " + req.body.lastName,
-          updated_by: req.body.firstName + " " + req.body.lastName,
-        })
+      .then(async (data) => {
+        await db.sequelize
+          .query(`CALL createUser(?,?,?,?,?,?,?)`, {
+            replacements: [
+              req.body.firstName,
+              req.body.lastName,
+              data.Location,
+              req.body.phone,
+              bcrypt.hashSync(req.body.password, 8),
+              req.body.firstName + " " + req.body.lastName,
+              req.body.firstName + " " + req.body.lastName,
+            ],
+          })
           .then((user) => {
+            unlinkFile(req.file.path);
             res.send({ message: "User registered successfully!" });
           })
           .catch((err) => {
             res.status(500).send({ message: err.message });
           });
-        unlinkFile(req.file.path);
       })
       .catch((err) => {
         console.log(err);
@@ -43,85 +45,79 @@ exports.signup = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    const { firstName, lastName, id } = req.body;
+    let { firstName, lastName, id } = req.body;
+    let userId = parseInt(id);
+
     if (req.file) {
       uploadFile(req.file)
         .then(async (data) => {
-          const user = await User.findOne({
-            where: {
-              id: id,
-            },
-          });
-
-          if (!user) {
-            return res.status(404).send({ message: "User not found" });
-          }
-
-          user.firstName = firstName || user.firstName;
-          user.lastName = lastName || user.lastName;
-          user.photo = data.Location || user.photo;
-          user.updated_by = user.firstName + " " + user.lastName;
-          user.updated_date = new Date().toUTCString();
-          await user.save();
-          unlinkFile(req.file.path);
-          return res.status(200).json({
-            message: "User updated successfully",
-            data: {
-              id: user.id,
-              firstName: user.firstName,
-              lastName: user.lastName,
-              photo: user.photo,
-            },
-          });
+          await db.sequelize
+            .query(`CALL updateUser(?,?,?,?)`, {
+              replacements: [userId, firstName, lastName, data.Location],
+            })
+            .then(async (result) => {
+              unlinkFile(req.file.path);
+              return res.status(200).json({
+                message: "User updated successfully",
+                data: {
+                  id: userId,
+                  firstName: firstName,
+                  lastName: lastName,
+                  photo: data.Location,
+                },
+              });
+            })
+            .catch((err) => {
+              console.error(err);
+              res.status(500).json({ message: "Server error" });
+            });
         })
         .catch((err) => {
           console.log(err);
         });
     } else {
-      const user = await User.findOne({
-        where: {
-          id: id,
-        },
-      });
-
-      if (!user) {
-        return res.status(404).send({ message: "User not found" });
-      }
-
-      user.firstName = firstName || user.firstName;
-      user.lastName = lastName || user.lastName;
-      user.updated_by = user.firstName + " " + user.lastName;
-      user.updated_date = new Date().toUTCString();
-      await user.save();
-
-      return res.status(200).json({
-        message: "User updated successfully",
-        data: {
-          id: user.id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-        },
-      });
+      await db.sequelize
+        .query(`CALL updateUser(?,?,?,?)`, {
+          replacements: [userId, firstName, lastName, null],
+        })
+        .then(async (result) => {
+          return res.status(200).json({
+            message: "User updated successfully",
+            data: {
+              id: userId,
+              firstName: firstName,
+              lastName: lastName,
+            },
+          });
+        })
+        .catch((err) => {
+          console.error(err);
+          res.status(500).json({ message: "Server error" });
+        });
     }
   } catch (err) {
     res.status(404).send({ message: "Server Error" });
   }
 };
+
 exports.deleteUser = async (req, res) => {
   try {
     const userId = req.query["userId"];
-    const user = await User.findOne({
-      where: { id: userId },
-    });
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    await db.sequelize
+      .query(`CALL deleteUser(?)`, { replacements: [userId] })
+      .then(async (result) => {
+        await res.clearCookie("access_token", {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+        });
 
-    // delete the user from the database
-    await user.destroy();
-
-    res.status(204).send({ message: "User Deleted" }); // send a 204 No Content response to indicate success
+        res.status(204).send({ message: "User Deleted!" });
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+      });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
@@ -131,20 +127,25 @@ exports.deleteUser = async (req, res) => {
 exports.logout = async (req, res) => {
   try {
     const userId = req.body.uid;
-    const user = await User.findOne({
-      where: { id: userId },
-    });
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    await res.clearCookie("access_token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-    });
-    // delete the user from the database
+    await db.sequelize
+      .query(`CALL findUserById(?)`, { replacements: [userId] })
+      .then(async (result) => {
+        const user = result[0];
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+        await res.clearCookie("access_token", {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+        });
 
-    res.status(204).send({ message: "User logged Out" }); // send a 204 No Content response to indicate success
+        res.status(204).send({ message: "User logged Out" });
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+      });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });

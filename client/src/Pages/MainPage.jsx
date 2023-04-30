@@ -60,7 +60,13 @@ const MainPage = () => {
     formData.append("id", userDetails.id);
     formData.append("firstName", userDetails.firstName);
     formData.append("lastName", userDetails.lastName);
-    dispatch(updateUser({ id: userDetails.id, formData: formData }));
+    dispatch(
+      updateUser({
+        id: userDetails.id,
+        photo: userDetails.photo,
+        formData: formData,
+      })
+    );
   };
   const removeUser = () => {
     dispatch(deleteUser(userDetails));
@@ -72,7 +78,7 @@ const MainPage = () => {
     });
   };
   const handleLogout = () => {
-    dispatch(logout({uid:userDetails.id}));
+    dispatch(logout({ uid: userDetails.id }));
   };
   return (
     <div>
