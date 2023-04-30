@@ -1,8 +1,9 @@
 import React, { useState } from "react";
+import PhotoInput from "./PhotoInput";
 
 const EditImage = ({ imageUrl, edit, setNewPhoto }) => {
   const [isHovering, setIsHovering] = useState(false);
-  // const [photo, setPhoto] = useState(null);
+  const [photo, setPhoto] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const handleMouseEnter = () => {
     setIsHovering(true);
@@ -20,18 +21,24 @@ const EditImage = ({ imageUrl, edit, setNewPhoto }) => {
     reader.readAsDataURL(event.target.files[0]);
   };
   const handleUploadButtonClick = () => {};
-
+  
   return (
     <div
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       style={{ position: "relative" }}
     >
-      <img
+      {/* <img
         src={previewUrl || imageUrl}
-        className="card-img-top"
+        
         alt="userPhoto"
         height={300}
+      /> */}
+      <PhotoInput
+        className={"card-img-top"}
+        handlePhotoChange={handlePhotoChange}
+        photoUrl={previewUrl || imageUrl}
+        photoName="photo"
       />
 
       {edit && isHovering && (

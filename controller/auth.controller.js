@@ -51,20 +51,22 @@ exports.updateUser = async (req, res) => {
     if (req.file) {
       uploadFile(req.file)
         .then(async (data) => {
+          const newPhoto = data.Location;
           await db.sequelize
             .query(`CALL updateUser(?,?,?,?)`, {
-              replacements: [userId, firstName, lastName, data.Location],
+              replacements: [userId, firstName, lastName, newPhoto],
             })
             .then(async (result) => {
               unlinkFile(req.file.path);
+              const data = {
+                id: userId,
+                firstName: firstName,
+                lastName: lastName,
+                photo: newPhoto,
+              };
               return res.status(200).json({
-                message: "User updated successfully",
-                data: {
-                  id: userId,
-                  firstName: firstName,
-                  lastName: lastName,
-                  photo: data.Location,
-                },
+                message: "User updated successfully-withPhoto",
+                data: data,
               });
             })
             .catch((err) => {
@@ -82,7 +84,7 @@ exports.updateUser = async (req, res) => {
         })
         .then(async (result) => {
           return res.status(200).json({
-            message: "User updated successfully",
+            message: "User updated successfully-withoutPhoto",
             data: {
               id: userId,
               firstName: firstName,

@@ -1,8 +1,9 @@
 import React from "react";
+import "../styles/style.css";
 
 const CardForm = ({ userDetails, handleDetailsChange, saveDetails }) => {
   return (
-    <div>
+    <div className="cardForm">
       <form onSubmit={saveDetails}>
         <div className="form-group">
           <label htmlFor="firstName">First Name</label>

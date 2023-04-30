@@ -10,6 +10,8 @@ import {
 } from "../store/authSlice";
 import EditImage from "../Components/EditImage";
 import CardForm from "../Components/cardForm";
+import "../styles/style.css";
+import PhotoInput from "../Components/PhotoInput";
 
 const MainPage = () => {
   const [userDetails, setUserDetails] = useState({
@@ -20,6 +22,7 @@ const MainPage = () => {
     photo: "",
   });
   const [newPhoto, setNewPhoto] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
   const [greeting, setGreeting] = useState("");
   const [edit, setEdit] = useState(false);
   const navigate = useNavigate();
@@ -60,6 +63,7 @@ const MainPage = () => {
     formData.append("id", userDetails.id);
     formData.append("firstName", userDetails.firstName);
     formData.append("lastName", userDetails.lastName);
+
     dispatch(
       updateUser({
         id: userDetails.id,
@@ -67,6 +71,7 @@ const MainPage = () => {
         formData: formData,
       })
     );
+    setNewPhoto(null);
   };
   const removeUser = () => {
     dispatch(deleteUser(userDetails));
@@ -77,20 +82,38 @@ const MainPage = () => {
       return { ...userDetails, [name]: value };
     });
   };
-  const handleLogout = () => {
-    dispatch(logout({ uid: userDetails.id }));
+  const handlePhotoChange = (event) => {
+    setNewPhoto(event.target.files[0]);
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setPreviewUrl(event.target.result);
+    };
+    reader.readAsDataURL(event.target.files[0]);
   };
+  // const handleLogout = () => {
+  //   dispatch(logout({ uid: userDetails.id }));
+  // };
   return (
-    <div>
-      <div onClick={handleLogout}>Logout</div>
-      <div className="card" style={{ width: "45%" }}>
-        <EditImage
+    <>
+      {/* <div onClick={handleLogout}>Logout</div> */}
+      <div className="card m-auto mt-4" style={{ width: "500px" }}>
+        {/* <EditImage
           imageUrl={userDetails.photo}
           edit={edit}
           setNewPhoto={setNewPhoto}
+        /> */}
+        <PhotoInput
+          handlePhotoChange={handlePhotoChange}
+          photoUrl={previewUrl}
+          photoName="photo"
+          additionalDetails={{
+            edit: edit,
+            userPhoto: userDetails.photo,
+            from: "mainPage",
+          }}
         />
         <div className="card-body">
-          {/* <h5 className="card-title">Card title</h5> */}
           {edit ? (
             <CardForm
               userDetails={userDetails}
@@ -98,11 +121,11 @@ const MainPage = () => {
               saveDetails={saveDetails}
             />
           ) : (
-            <p className="card-text">
+            <h4 className="card-text">
               {greeting} {userDetails.firstName} {userDetails.lastName}
-            </p>
+            </h4>
           )}
-          <div>
+          <div className="buttonGroup">
             <button
               onClick={edit ? saveDetails : editDetails}
               className="btn btn-primary"
@@ -115,7 +138,7 @@ const MainPage = () => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
