@@ -5,6 +5,9 @@ const API_URL = "http://localhost:3000/api/auth/";
 // Register user
 const register = async (userData) => {
   const response = await axios.post(API_URL + "signup", userData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
     withCredentials: true,
   });
 

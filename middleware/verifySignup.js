@@ -2,7 +2,6 @@ const db = require("../models");
 const User = db.user;
 
 checkDuplicatePhone = (req, res, next) => {
-  // PhoneNumber
   User.findOne({
     where: {
       phone: req.body.phone,

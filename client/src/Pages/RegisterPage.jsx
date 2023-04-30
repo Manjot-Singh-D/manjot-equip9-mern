@@ -10,6 +10,7 @@ const RegisterPage = () => {
     phone: "",
     password: "",
   });
+  const [photo, setPhoto] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user, isLoading, isError, isSuccess, message } = useSelector(
@@ -34,18 +35,17 @@ const RegisterPage = () => {
 
   const submitRegister = (event) => {
     event.preventDefault();
-    // axios
-    //   .post("http://localhost:3000/api/auth/signup", registerDetails, {
-    //     withCredentials: true,
-    //   })
-    //   .then((data) => {
-    //     console.log(data);
-    //     navigate("/login");
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
-    dispatch(register(registerDetails));
+    const formData = new FormData();
+    formData.append("photo", photo);
+    formData.append("firstName", registerDetails.firstName);
+    formData.append("lastName", registerDetails.lastName);
+    formData.append("phone", registerDetails.phone);
+    formData.append("password", registerDetails.password);
+    // const data = { ...registerDetails, ["formData"]: formData };
+    dispatch(register(formData));
+  };
+  const handlePhotoChange = (event) => {
+    setPhoto(event.target.files[0]);
   };
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -56,8 +56,8 @@ const RegisterPage = () => {
   return (
     <div>
       <div>
-        <form onSubmit={submitRegister}>
-          <input type="file" />
+        <form>
+          <input type="file" name="photo" onChange={handlePhotoChange} />
           <input
             name="firstName"
             type="text"
@@ -82,7 +82,9 @@ const RegisterPage = () => {
             value={registerDetails.password}
             onChange={handleChange}
           />
-          <button type="submit">Submit</button>
+          <button type="submit" onClick={submitRegister}>
+            Submit
+          </button>
         </form>
       </div>
     </div>
