@@ -12,14 +12,47 @@ const register = async (userData) => {
   });
 
   if (response.data) {
-    // console.log("Done !! Registering! : ", response.data);
     // localStorage.setItem("user", JSON.stringify(response.data));
   }
 
   // return response.data;
   return;
 };
+// Update User
+const updateUser = async (updatedValues) => {
+  const response = await axios.patch(
+    API_URL + "updateUser",
+    updatedValues.formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      withCredentials: true,
+    }
+  );
 
+  if (response.data) {
+    localStorage.setItem("user", JSON.stringify(response.data));
+  }
+
+  return response.data;
+};
+// Delete User
+const deleteUser = async (userDetails) => {
+  const response = await axios.delete(API_URL + "deleteUser", {
+    params: { userId: userDetails.id },
+    headers: {
+      "Content-Type": "application/json",
+    },
+    withCredentials: true,
+  });
+
+  if (response) {
+    localStorage.removeItem("user");
+  }
+
+  return response.data;
+};
 // Login user
 const login = async (userData) => {
   const response = await axios.post(API_URL + "signin", userData, {
@@ -27,7 +60,6 @@ const login = async (userData) => {
   });
 
   if (response.data) {
-    // console.log("Done!! Login : ", response.data);
     localStorage.setItem("user", JSON.stringify(response.data));
   }
 
@@ -35,15 +67,26 @@ const login = async (userData) => {
 };
 
 // Logout user
-const logout = () => {
-  // console.log("logging out!!");
-  localStorage.removeItem("user");
+const logout = async (uid) => {
+  const response = await axios.post(API_URL + "logout", uid, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    withCredentials: true,
+  });
+  if (response) {
+    localStorage.removeItem("user");
+  }
+
+  return response.data;
 };
 
 const authService = {
   register,
   logout,
   login,
+  updateUser,
+  deleteUser,
 };
 
 export default authService;

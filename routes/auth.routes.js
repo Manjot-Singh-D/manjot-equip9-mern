@@ -28,6 +28,12 @@ module.exports = function (app) {
     [verifySignUp.checkDuplicatePhone],
     controller.signup
   );
-
+  app.patch(
+    "/api/auth/updateUser",
+    upload.single("photo"),
+    controller.updateUser
+  );
+  app.delete("/api/auth/deleteUser", controller.deleteUser);
   app.post("/api/auth/signin", controller.signin);
+  app.post("/api/auth/logout", controller.logout);
 };

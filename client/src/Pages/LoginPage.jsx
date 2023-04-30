@@ -19,7 +19,6 @@ const LoginPage = () => {
     }
 
     if (isSuccess && user?.data) {
-      console.log(isSuccess, user);
       navigate("/");
     }
 
@@ -39,8 +38,51 @@ const LoginPage = () => {
   };
   return (
     <div>
+      <form onSubmit={submitLogin}>
+        <div className="form-group">
+          <label htmlFor="phoneNumberInput">Phone Number</label>
+          <input
+            name="phone"
+            type="tel"
+            className="form-control"
+            id="phoneNumberInput"
+            aria-describedby="phoneHelp"
+            placeholder="Enter phone"
+            value={loginDetails.phone}
+            onChange={handleChange}
+          />
+          <small id="phoneHelp" className="form-text text-muted">
+            {/* We'll never share your email with anyone else. */}
+          </small>
+        </div>
+        <div className="form-group">
+          <label htmlFor="passwordInput">Password</label>
+          <input
+            name="password"
+            type="password"
+            className="form-control"
+            id="passwordInput"
+            placeholder="Password"
+            value={loginDetails.password}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="form-group form-check">
+          <input
+            type="checkbox"
+            className="form-check-input"
+            id="exampleCheck1"
+          />
+          <label className="form-check-label" htmlFor="exampleCheck1">
+            Check me out
+          </label>
+        </div>
+        <button type="submit" className="btn btn-primary">
+          Submit
+        </button>
+      </form>
       <div>
-        <form onSubmit={submitLogin}>
+        {/* <form onSubmit={submitLogin}>
           <input
             name="phone"
             type="tel"
@@ -54,7 +96,7 @@ const LoginPage = () => {
             onChange={handleChange}
           />
           <button type="submit">Submit</button>
-        </form>
+        </form> */}
       </div>
     </div>
   );

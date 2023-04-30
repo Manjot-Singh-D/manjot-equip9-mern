@@ -13,7 +13,6 @@ const { uploadFile, getFileStream } = require("./s3.controller");
 
 exports.signup = async (req, res) => {
   // Save User to Database
-  console.log(req.file);
   try {
     uploadFile(req.file)
       .then((data) => {
@@ -39,6 +38,116 @@ exports.signup = async (req, res) => {
       });
   } catch (err) {
     res.status(404).send({ message: "Server Error" });
+  }
+};
+
+exports.updateUser = async (req, res) => {
+  try {
+    const { firstName, lastName, id } = req.body;
+    if (req.file) {
+      uploadFile(req.file)
+        .then(async (data) => {
+          const user = await User.findOne({
+            where: {
+              id: id,
+            },
+          });
+
+          if (!user) {
+            return res.status(404).send({ message: "User not found" });
+          }
+
+          user.firstName = firstName || user.firstName;
+          user.lastName = lastName || user.lastName;
+          user.photo = data.Location || user.photo;
+          user.updated_by = user.firstName + " " + user.lastName;
+          user.updated_date = new Date().toUTCString();
+          await user.save();
+          unlinkFile(req.file.path);
+          return res.status(200).json({
+            message: "User updated successfully",
+            data: {
+              id: user.id,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              photo: user.photo,
+            },
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      const user = await User.findOne({
+        where: {
+          id: id,
+        },
+      });
+
+      if (!user) {
+        return res.status(404).send({ message: "User not found" });
+      }
+
+      user.firstName = firstName || user.firstName;
+      user.lastName = lastName || user.lastName;
+      user.updated_by = user.firstName + " " + user.lastName;
+      user.updated_date = new Date().toUTCString();
+      await user.save();
+
+      return res.status(200).json({
+        message: "User updated successfully",
+        data: {
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        },
+      });
+    }
+  } catch (err) {
+    res.status(404).send({ message: "Server Error" });
+  }
+};
+exports.deleteUser = async (req, res) => {
+  try {
+    const userId = req.query["userId"];
+    const user = await User.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // delete the user from the database
+    await user.destroy();
+
+    res.status(204).send({ message: "User Deleted" }); // send a 204 No Content response to indicate success
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.logout = async (req, res) => {
+  try {
+    const userId = req.body.uid;
+    const user = await User.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    await res.clearCookie("access_token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    });
+    // delete the user from the database
+
+    res.status(204).send({ message: "User logged Out" }); // send a 204 No Content response to indicate success
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 };
 

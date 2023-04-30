@@ -3,10 +3,14 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainPage from "./Pages/MainPage";
 import RegisterPage from "./Pages/RegisterPage";
 import LoginPage from "./Pages/LoginPage";
+import { useDispatch } from "react-redux";
+import { logout } from "./store/authSlice";
 
 const App = () => {
+
   return (
     <>
+      
       <BrowserRouter>
         <Routes>
           <Route exact path="/" element={<MainPage />} />

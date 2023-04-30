@@ -28,7 +28,40 @@ export const register = createAsyncThunk(
     }
   }
 );
-
+// update User
+export const updateUser = createAsyncThunk(
+  "api/auth/updateUser",
+  async (user, thunkAPI) => {
+    try {
+      return await authService.updateUser(user);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+// Delete User
+export const deleteUser = createAsyncThunk(
+  "api/auth/deleteUser",
+  async (userDetails, thunkAPI) => {
+    try {
+      return await authService.deleteUser(userDetails);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 // Login user
 export const login = createAsyncThunk(
   "api/auth/signin",
@@ -47,9 +80,22 @@ export const login = createAsyncThunk(
   }
 );
 
-export const logout = createAsyncThunk("api/auth/logout", async () => {
-  await authService.logout();
-});
+export const logout = createAsyncThunk(
+  "api/auth/logout",
+  async (userId, thunkAPI) => {
+    try {
+      return await authService.logout(userId);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 
 export const authSlice = createSlice({
   name: "auth",
@@ -93,6 +139,34 @@ export const authSlice = createSlice({
         state.user = null;
       })
       .addCase(logout.fulfilled, (state) => {
+        state.user = null;
+      })
+      .addCase(updateUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.user = action.payload;
+      })
+      .addCase(updateUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+        state.user = null;
+      })
+      .addCase(deleteUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(deleteUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.user = action.payload;
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
         state.user = null;
       });
   },

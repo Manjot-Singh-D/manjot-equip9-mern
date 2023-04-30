@@ -19,7 +19,6 @@ const RegisterPage = () => {
 
   useEffect(() => {
     if (isError) {
-      // console.log(message);
       // toast.error(message);
     }
 
