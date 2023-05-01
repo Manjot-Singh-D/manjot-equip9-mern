@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { register, reset } from "../store/authSlice";
@@ -7,6 +6,7 @@ import "../styles/style.css";
 import Toast from "../Components/Toast";
 import PhotoInput from "../Components/PhotoInput";
 
+// Registeration Page
 const RegisterPage = () => {
   const [registerDetails, setRegisterDetails] = useState({
     firstName: "",
@@ -23,7 +23,6 @@ const RegisterPage = () => {
   });
   const [toast, setToast] = useState(false);
   const [photo, setPhoto] = useState(null);
-
   const [previewUrl, setPreviewUrl] = useState(null);
 
   const navigate = useNavigate();
@@ -38,7 +37,6 @@ const RegisterPage = () => {
       setTimeout(() => {
         setToast(false);
       }, 2000);
-      // toast.error(message);
     }
 
     if (isSuccess && user?.data) {
@@ -50,6 +48,7 @@ const RegisterPage = () => {
 
     dispatch(reset());
   }, [user, isError, isSuccess, message, navigate, dispatch]);
+  // Validating Functions
   const allDigits = (phoneNumber) => {
     for (let index = 0; index < phoneNumber.length; index++) {
       if (phoneNumber[index] >= "0" && phoneNumber[index] <= "9") {
@@ -125,6 +124,8 @@ const RegisterPage = () => {
       return true;
     }
   };
+
+  // Submit Registeration Details
   const submitRegister = (event) => {
     event.preventDefault();
     const formData = new FormData();
@@ -149,6 +150,7 @@ const RegisterPage = () => {
       dispatch(register(formData));
     }
   };
+  // handle Photo Change
   const handlePhotoChange = (event) => {
     setPhoto(event.target.files[0]);
 
@@ -158,6 +160,7 @@ const RegisterPage = () => {
     };
     reader.readAsDataURL(event.target.files[0]);
   };
+  // Handle Details change
   const handleChange = (event) => {
     const { name, value } = event.target;
     setRegisterDetails((registerDetails) => {
@@ -169,12 +172,11 @@ const RegisterPage = () => {
       {toast && <Toast message={"Error in Registering"} />}
       <form className="m-auto mt-3" style={{ width: "500px" }}>
         <div className="form-group">
-          {/* <input type="file" name="photo" onChange={handlePhotoChange} /> */}
           <PhotoInput
             handlePhotoChange={handlePhotoChange}
             photoUrl={previewUrl}
             photoName="photo"
-            additionalDetails={{from: "regPage"}}
+            additionalDetails={{ from: "regPage" }}
           />
           <small
             id="photoHelp"

@@ -7,8 +7,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { logout } from "./store/authSlice";
 import Navbar from "./Components/Navbar";
 
+// App Component
 const App = () => {
-  // const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const { user, isLoading, isError, isSuccess, message } = useSelector(
@@ -17,12 +17,12 @@ const App = () => {
 
   useEffect(() => {
     if (!user) {
-      // navigate("/register");
     }
     if (user?.data) {
     }
   }, [user, isError, isSuccess, message, dispatch]);
 
+  // Handle Logout
   const handleLogout = () => {
     dispatch(logout({ uid: user.data.id }));
   };

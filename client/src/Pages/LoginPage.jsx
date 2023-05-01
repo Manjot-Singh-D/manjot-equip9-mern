@@ -4,10 +4,13 @@ import { useSelector, useDispatch } from "react-redux";
 import { login, reset } from "../store/authSlice";
 import "../styles/style.css";
 import Toast from "../Components/Toast";
+
+// Login Page
 const LoginPage = () => {
   const [loginDetails, setLoginDetails] = useState({ phone: "", password: "" });
   const [validate, setValidate] = useState({ phone: true, password: true });
   const [toast, setToast] = useState(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -17,7 +20,6 @@ const LoginPage = () => {
 
   useEffect(() => {
     if (isError) {
-      console.log("Error");
       setToast(true);
       setTimeout(() => {
         setToast(false);
@@ -31,6 +33,7 @@ const LoginPage = () => {
     dispatch(reset());
   }, [user, isError, isSuccess, message, navigate, dispatch]);
 
+  // Validating Functions
   const allDigits = (phoneNumber) => {
     for (let index = 0; index < phoneNumber.length; index++) {
       if (phoneNumber[index] >= "0" && phoneNumber[index] <= "9") {
@@ -67,6 +70,8 @@ const LoginPage = () => {
       return true;
     }
   };
+
+  // Submit Login Details
   const submitLogin = (event) => {
     event.preventDefault();
     const phoneValid = isPhoneValid(loginDetails.phone);
@@ -75,6 +80,7 @@ const LoginPage = () => {
       dispatch(login(loginDetails));
     }
   };
+  // Handle any change in values
   const handleChange = (event) => {
     const { name, value } = event.target;
     setLoginDetails((loginDetails) => {

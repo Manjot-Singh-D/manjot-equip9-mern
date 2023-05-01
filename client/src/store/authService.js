@@ -11,13 +11,9 @@ const register = async (userData) => {
     withCredentials: true,
   });
 
-  if (response.data) {
-    // localStorage.setItem("user", JSON.stringify(response.data));
-  }
-
-  // return response.data;
   return;
 };
+
 // Update User
 const updateUser = async (updatedValues) => {
   const response = await axios.patch(
@@ -40,6 +36,7 @@ const updateUser = async (updatedValues) => {
   }
   return response.data;
 };
+
 // Delete User
 const deleteUser = async (userDetails) => {
   const response = await axios.delete(API_URL + "deleteUser", {
@@ -56,6 +53,7 @@ const deleteUser = async (userDetails) => {
 
   return response.data;
 };
+
 // Login user
 const login = async (userData) => {
   const response = await axios.post(API_URL + "signin", userData, {

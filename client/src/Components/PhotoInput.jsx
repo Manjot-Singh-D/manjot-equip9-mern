@@ -3,6 +3,7 @@ import "../styles/style.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
 
+// PhotoInput that inputs photo from user and set its preview
 const PhotoInput = ({
   photoUrl,
   photoName,
@@ -31,11 +32,6 @@ const PhotoInput = ({
           alt={photoName}
           style={{ width: "100%", height: "100%", position: "absolute" }}
         />
-        {/* <img
-          src={additionalDetails.from==="mainPage"}
-          alt={photoName}
-          style={{ width: "100%", height: "100%", position: "absolute" }}
-        /> */}
         <input
           id="inputFile"
           type="file"

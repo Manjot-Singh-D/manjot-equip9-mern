@@ -2,6 +2,7 @@ const config = require("../config/db.config");
 
 const { Sequelize, DataTypes } = require("sequelize");
 
+// Configuring Sequelize
 const sequelize = new Sequelize(config.DB, config.USER, config.PASSWORD, {
   host: config.HOST,
   dialect: config.dialect,
@@ -21,6 +22,7 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
+// Stored procedure for deleting user
 try {
   db.sequelize.query(`
   CREATE PROCEDURE IF NOT EXISTS deleteUser(IN userId INT)
@@ -30,6 +32,7 @@ END
 `);
 } catch (err) {}
 
+// Stored procedure for finding user
 try {
   db.sequelize.query(`
   CREATE PROCEDURE IF NOT EXISTS findUserById(IN userId INT)
@@ -39,6 +42,7 @@ try {
 `);
 } catch (err) {}
 
+// Stored procedure for updating user
 try {
   db.sequelize.query(`
   CREATE PROCEDURE IF NOT EXISTS updateUser(IN userId INT, IN firstName VARCHAR(255), IN lastName VARCHAR(255), IN photo VARCHAR(255))
@@ -55,6 +59,7 @@ try {
 `);
 } catch (err) {}
 
+// Stored procedure for creating new user
 try {
   db.sequelize.query(`
   CREATE PROCEDURE IF NOT EXISTS createUser(

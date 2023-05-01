@@ -1,6 +1,7 @@
 import React from "react";
 import "../styles/style.css";
 
+// CardForm shows a form to enter details to edit
 const CardForm = ({ userDetails, handleDetailsChange, saveDetails }) => {
   return (
     <div className="cardForm">

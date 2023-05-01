@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import "../styles/style.css";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
+// Navbar
 const Navbar = ({ handleLogout }) => {
   const location = useLocation();
   const [page, setPage] = useState("");
+
+  // On Url Changes set the state page
   useEffect(() => {
     const pathname = location.pathname;
     const segments = pathname.split("/");

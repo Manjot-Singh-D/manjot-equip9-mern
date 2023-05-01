@@ -1,6 +1,7 @@
 const db = require("../models");
 const User = db.user;
 
+// Check if there are no duplicate phone numbers
 checkDuplicatePhone = (req, res, next) => {
   User.findOne({
     where: {

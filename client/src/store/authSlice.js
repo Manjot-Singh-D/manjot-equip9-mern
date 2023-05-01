@@ -28,6 +28,7 @@ export const register = createAsyncThunk(
     }
   }
 );
+
 // update User
 export const updateUser = createAsyncThunk(
   "api/auth/updateUser",
@@ -45,6 +46,7 @@ export const updateUser = createAsyncThunk(
     }
   }
 );
+
 // Delete User
 export const deleteUser = createAsyncThunk(
   "api/auth/deleteUser",
@@ -62,6 +64,7 @@ export const deleteUser = createAsyncThunk(
     }
   }
 );
+
 // Login user
 export const login = createAsyncThunk(
   "api/auth/signin",
@@ -80,6 +83,7 @@ export const login = createAsyncThunk(
   }
 );
 
+// Logout user
 export const logout = createAsyncThunk(
   "api/auth/logout",
   async (userId, thunkAPI) => {
@@ -96,7 +100,7 @@ export const logout = createAsyncThunk(
     }
   }
 );
-
+// Slice Details
 export const authSlice = createSlice({
   name: "auth",
   initialState,

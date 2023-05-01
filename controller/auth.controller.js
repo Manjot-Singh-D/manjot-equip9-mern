@@ -11,6 +11,7 @@ var bcrypt = require("bcryptjs");
 
 const { uploadFile } = require("./s3.controller");
 
+// Signup
 exports.signup = async (req, res) => {
   try {
     uploadFile(req.file)
@@ -42,7 +43,7 @@ exports.signup = async (req, res) => {
     res.status(404).send({ message: "Server Error" });
   }
 };
-
+// UpdateUser
 exports.updateUser = async (req, res) => {
   try {
     let { firstName, lastName, id } = req.body;
@@ -102,6 +103,7 @@ exports.updateUser = async (req, res) => {
   }
 };
 
+// DeleteUser
 exports.deleteUser = async (req, res) => {
   try {
     const userId = req.query["userId"];
@@ -126,6 +128,7 @@ exports.deleteUser = async (req, res) => {
   }
 };
 
+// Logout User
 exports.logout = async (req, res) => {
   try {
     const userId = req.body.uid;
@@ -154,6 +157,7 @@ exports.logout = async (req, res) => {
   }
 };
 
+// Signin user
 exports.signin = (req, res) => {
   User.findOne({
     where: {
@@ -187,7 +191,7 @@ exports.signin = (req, res) => {
         })
         .status(200)
         .json({
-          message: "Logged in successfully 😊 👌",
+          message: "Logged in successfully",
           data: {
             id: user.id,
             firstName: user.firstName,

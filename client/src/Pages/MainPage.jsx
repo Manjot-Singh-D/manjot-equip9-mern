@@ -1,18 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  login,
-  reset,
-  updateUser,
-  deleteUser,
-  logout,
-} from "../store/authSlice";
-import EditImage from "../Components/EditImage";
+import { updateUser, deleteUser } from "../store/authSlice";
 import CardForm from "../Components/cardForm";
 import "../styles/style.css";
 import PhotoInput from "../Components/PhotoInput";
 
+// Main Page that shows user value
 const MainPage = () => {
   const [userDetails, setUserDetails] = useState({
     id: 0,
@@ -25,6 +19,7 @@ const MainPage = () => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [greeting, setGreeting] = useState("");
   const [edit, setEdit] = useState(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -36,11 +31,11 @@ const MainPage = () => {
     const hour = date.getHours();
 
     if (hour < 12) {
-      setGreeting("Good morning");
+      setGreeting("Good Morning");
     } else if (hour < 18) {
-      setGreeting("Good afternoon");
+      setGreeting("Good Afternoon");
     } else {
-      setGreeting("Good evening");
+      setGreeting("Good Evening");
     }
   }, []);
   useEffect(() => {
@@ -51,10 +46,11 @@ const MainPage = () => {
       setUserDetails(user.data);
     }
   }, [user, isError, isSuccess, message, navigate, dispatch]);
-
+  // Edit details of user
   const editDetails = () => {
     setEdit(true);
   };
+  // Called on saving the details
   const saveDetails = (event) => {
     event.preventDefault();
     setEdit(false);
@@ -73,15 +69,18 @@ const MainPage = () => {
     );
     setNewPhoto(null);
   };
+  // Removing a user
   const removeUser = () => {
     dispatch(deleteUser(userDetails));
   };
+  // Handle any details change
   const handleDetailsChange = (event) => {
     const { name, value } = event.target;
     setUserDetails((userDetails) => {
       return { ...userDetails, [name]: value };
     });
   };
+  // Handle if photo changes
   const handlePhotoChange = (event) => {
     setNewPhoto(event.target.files[0]);
 
@@ -91,18 +90,10 @@ const MainPage = () => {
     };
     reader.readAsDataURL(event.target.files[0]);
   };
-  // const handleLogout = () => {
-  //   dispatch(logout({ uid: userDetails.id }));
-  // };
+
   return (
     <>
-      {/* <div onClick={handleLogout}>Logout</div> */}
       <div className="card m-auto mt-4" style={{ width: "500px" }}>
-        {/* <EditImage
-          imageUrl={userDetails.photo}
-          edit={edit}
-          setNewPhoto={setNewPhoto}
-        /> */}
         <PhotoInput
           handlePhotoChange={handlePhotoChange}
           photoUrl={previewUrl}

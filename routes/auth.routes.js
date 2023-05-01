@@ -3,17 +3,19 @@ const controller = require("../controller/auth.controller");
 var multer = require("multer");
 var path = require("path");
 
+// Multer Storage
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "uploads/");
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); //Appending extension
+    cb(null, Date.now() + path.extname(file.originalname));
   },
 });
 
 var upload = multer({ storage: storage });
 
+// Routes
 module.exports = function (app) {
   app.use(function (req, res, next) {
     res.header(
